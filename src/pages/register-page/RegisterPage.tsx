@@ -11,72 +11,49 @@ import Message from "../../components/message/Message"; // ایمپورت کام
 
 const RegisterPage = () => {
   const [message, setMessage] = useState("");
-  const users = useFetchUsers(); // استفاده از هوک سفارشی برای دریافت کاربران
-  const { formData, setFormData, resetForm } = useFormData(); // استفاده از هوک سفارشی برای مدیریت فرم
+  const users = useFetchUsers();
+  const { formData, setFormData, resetForm } = useFormData();
 
   const handleSubmit = async () => {
     setMessage("");
     const resultMessage = await submitUserData(formData, users);
     setMessage(resultMessage);
-    
+
     if (resultMessage === "ثبت نام با موفقیت انجام شد") {
-      resetForm(); // ریست کردن فرم پس از ثبت نام موفق
+      resetForm();
     }
   };
+
+  const inputFields = [
+    { type: "text", name: "firstName", placeholder: "نام" },
+    { type: "text", name: "lastName", placeholder: "نام خانوادگی" },
+    { type: "text", name: "nationalCode", placeholder: "کد ملی", maxLength: 10 },
+    { type: "text", name: "phoneNumber", placeholder: "شماره موبایل", maxLength: 11 },
+    { type: "email", name: "email", placeholder: "ایمیل" },
+    { type: "text", name: "username", placeholder: "نام کاربری" },
+  ];
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">صفحه ثبت نام</h1>
       <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        <FormInput
-          type="text"
-          name="firstName"
-          placeholder="نام"
-          value={formData.firstName}
-          onChange={(e) => handleInputChange(e, formData, setFormData)}
-        />
-        <FormInput
-          type="text"
-          name="lastName"
-          placeholder="نام خانوادگی"
-          value={formData.lastName}
-          onChange={(e) => handleInputChange(e, formData, setFormData)}
-        />
-        <FormInput
-          type="text"
-          name="nationalCode"
-          placeholder="کد ملی"
-          value={formData.nationalCode}
-          onChange={(e) => handleInputChange(e, formData, setFormData)}
-          maxLength={10}
-        />
-        <FormInput
-          type="text"
-          name="phoneNumber"
-          placeholder="شماره موبایل"
-          value={formData.phoneNumber}
-          onChange={(e) => handleInputChange(e, formData, setFormData)}
-          maxLength={11}
-        />
-        <FormInput
-          type="email"
-          name="email"
-          placeholder="ایمیل"
-          value={formData.email}
-          onChange={(e) => handleInputChange(e, formData, setFormData)}
-        />
-        <FormInput
-          type="text"
-          name="username"
-          placeholder="نام کاربری"
-          value={formData.username}
-          onChange={(e) => handleInputChange(e, formData, setFormData)}
-        />
+        {inputFields.map((field) => (
+          <FormInput
+            key={field.name}
+            type={field.type}
+            name={field.name}
+            placeholder={field.placeholder}
+            value={formData[field.name as keyof typeof formData]}
+            onChange={(e) => handleInputChange(e, formData, setFormData)}
+            {...(field.maxLength && { maxLength: field.maxLength })}
+          />
+        ))}
         <Button onClick={handleSubmit} text="ثبت نام" />
-        <Message message={message} type={message === "ثبت نام با موفقیت انجام شد" ? "success" : "error"}/>
+        <Message message={message} type={message === "ثبت نام با موفقیت انجام شد" ? "success" : "error"} />
       </div>
     </div>
   );
 };
+
 
 export default RegisterPage;
